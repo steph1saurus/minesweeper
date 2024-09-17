@@ -97,14 +97,14 @@ public class GameLogic : MonoBehaviour
                 }
 
 
-                cell.number = CountMines(x,y);
+                cell.number = CountMines(x, y);
 
-                if (cell.number >0)
+                if (cell.number > 0)
                 {
                     cell.type = Cell.Type.Number;
                 }
 
-                cell.revealed = true;
+
                 state[x, y] = cell;
 
             }
@@ -118,11 +118,11 @@ public class GameLogic : MonoBehaviour
     {
 
         int count = 0;
-        for (int adjacentX = -1; adjacentX <= 1; adjacentX ++)
+        for (int adjacentX = -1; adjacentX <= 1; adjacentX++)
         {
-            for (int adjacentY = -1; adjacentY <=1; adjacentY ++)
+            for (int adjacentY = -1; adjacentY <= 1; adjacentY++)
             {
-                if(adjacentX ==0 && adjacentY == 0)
+                if (adjacentX == 0 && adjacentY == 0)
                 {
                     continue;
                 }
@@ -131,12 +131,8 @@ public class GameLogic : MonoBehaviour
                 int y = cellY + adjacentY;
 
                 //skip over tiles that are out of bounds
-                if (x<0 || x>= width || y <0 || y >=height)
-                {
-                    continue;
-                }
-
-                if (state[x,y].type == Cell.Type.Mine)
+               
+                if (GetCell(x,y).type == Cell.Type.Mine)
                 {
                     count++;
                 }
@@ -146,6 +142,55 @@ public class GameLogic : MonoBehaviour
 
         return count;
 
+    }
+
+
+    private void Update()
+    {
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            FlagMouseLocation();
+        }
+    }
+
+    private void FlagMouseLocation()
+    {
+
+        //convert screen position of the mouse to World position
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //convert mouse world position to cell
+        Vector3Int cellPosition = board.tilemap.WorldToCell(worldPosition);
+        //Get cell position
+        Cell cell = GetCell(cellPosition.x, cellPosition.y);
+
+        if (cell.type == Cell.Type.Invalid || cell.revealed)
+        {
+            return;
+        }
+
+        cell.flagged = !cell.flagged;
+        state[cellPosition.x, cellPosition.y] = cell;
+        board.Draw(state);
+
+    }
+
+
+    private Cell GetCell(int x, int y)
+    {
+        if (isValid(x, y))
+        {
+            return state[x, y];
+        }
+        else
+        {
+            return new Cell();
+        }
+    }
+
+    private bool isValid(int x, int y)
+    {
+        return x >= 0 && x < width && y >= 0 && y < height;
     }
 
 }

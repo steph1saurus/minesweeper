@@ -7,6 +7,7 @@ public struct Cell
 //define classification of cells
 public enum Type
     {
+        Invalid,
         Empty,
         Mine,
         Number,
