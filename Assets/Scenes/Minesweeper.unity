@@ -419,8 +419,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36013425341044021a27756645ecc0aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 16
-  height: 16
+  width: 4
+  height: 4
+  mineCount: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

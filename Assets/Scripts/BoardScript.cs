@@ -66,7 +66,7 @@ public class BoardScript : MonoBehaviour
         switch(cell.type)
         {
             case Cell.Type.Empty: return tileEmpty;
-            case Cell.Type.Mine: return tileMine;
+            case Cell.Type.Mine: return cell.explode ? tileExplode : tileMine; //returns the exploded tile, or else returns regular mine tile
             case Cell.Type.Number: return GetNumberTile(cell);
             default: return null;
         }

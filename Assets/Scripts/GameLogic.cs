@@ -3,15 +3,22 @@ using UnityEngine;
 
 public class GameLogic : MonoBehaviour
 {
+    [Header("Public variables")]
     //default size of gameboard
     public int width = 16;
     public int height = 16;
     public int mineCount = 32;
 
-    //script references
+    [Header("Private variables")]
     private BoardScript board;
     private Cell[,] state;
+    private bool gameOver;
 
+
+    private void OnValidate()
+    {
+        mineCount = Mathf.Clamp(mineCount, 0, width * height);
+    }
 
     private void Awake()
     {
@@ -21,11 +28,13 @@ public class GameLogic : MonoBehaviour
     private void Start()
     {
         NewGame();
+        
 
     }
 
     private void NewGame()
     {
+        gameOver = false;
         //create 2D array of cells
         state = new Cell[width, height];
 
@@ -147,26 +156,30 @@ public class GameLogic : MonoBehaviour
 
     private void Update()
     {
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            NewGame();
+        }
 
-        if (Input.GetMouseButtonDown(1))
+        else if(!gameOver)
         {
-            FlagMouseLocation();
+            if (Input.GetMouseButtonDown(1))
+            {
+                FlagMouseLocation();
+            }
+            else if (Input.GetMouseButtonDown(0))
+            {
+                RevealCell();
+            }
         }
-        else if (Input.GetMouseButtonDown(0))
-        {
-            RevealCell();
-        }
+        
     }
 
     private void FlagMouseLocation()
-    {
-
-        //convert screen position of the mouse to World position
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //convert mouse world position to cell
-        Vector3Int cellPosition = board.tilemap.WorldToCell(worldPosition);
-        //Get cell position
-        Cell cell = GetCell(cellPosition.x, cellPosition.y);
+    {   
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition); //convert screen position of the mouse to World position
+        Vector3Int cellPosition = board.tilemap.WorldToCell(worldPosition); //convert mouse world position to cell
+        Cell cell = GetCell(cellPosition.x, cellPosition.y);//Get cell position
 
         if (cell.type == Cell.Type.Invalid || cell.revealed)
         {
@@ -182,28 +195,34 @@ public class GameLogic : MonoBehaviour
 
     private void RevealCell()
     {
-        //convert screen position of the mouse to World position
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //convert mouse world position to cell
-        Vector3Int cellPosition = board.tilemap.WorldToCell(worldPosition);
-        //Get cell position
-        Cell cell = GetCell(cellPosition.x, cellPosition.y);
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);//convert screen position of the mouse to World position
+        Vector3Int cellPosition = board.tilemap.WorldToCell(worldPosition);//convert mouse world position to cell
+        Cell cell = GetCell(cellPosition.x, cellPosition.y); //Get cell position
 
-        //if cell is flagged, it will also not be revealed
-        if (cell.type == Cell.Type.Invalid || cell.revealed || cell.flagged)
+       
+        if (cell.type == Cell.Type.Invalid || cell.revealed || cell.flagged)//if cell is flagged, it will also not be revealed
         {
             return;
         }
 
-
-        if (cell.type == Cell.Type.Empty)
+        switch(cell.type)
         {
-            FloodEmpty(cell);
+            case Cell.Type.Mine:
+                Explode(cell);
+                break;
+            case Cell.Type.Empty:
+                FloodEmpty(cell);
+                CheckWinCondition();
+                break;
+
+            default:
+                cell.revealed = true;
+                state[cellPosition.x, cellPosition.y] = cell;
+                CheckWinCondition();
+                break;
         }
 
-
-        cell.revealed = true;
-        state[cellPosition.x, cellPosition.y] = cell;
+        
         board.Draw(state);
     }
 
@@ -229,6 +248,69 @@ public class GameLogic : MonoBehaviour
         }
 
     }
+
+    //when mine is clicked
+    private void Explode(Cell cell)
+    {
+        Debug.Log("Game over");
+        gameOver = true;
+
+        cell.revealed = true;
+        cell.explode = true; //renders exploded tile when mine is clicked
+        state[cell.position.x, cell.position.y] = cell;
+
+        for (int x = 0; x < width; x++)
+        {
+           for (int y = 0; y < height; y ++)
+            {
+                cell = state[x, y];
+
+                if (cell.type == Cell.Type.Mine)
+                {
+                    cell.revealed = true;
+                    state[x, y] = cell;
+                }
+
+            }
+        }
+
+    }
+
+    private void CheckWinCondition()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                Cell cell = state[x, y];
+                if (cell.type !=Cell.Type.Mine && !cell.revealed)
+                {
+                    return;
+                }
+            }
+        }
+
+        Debug.Log("You won!");
+        gameOver = true;
+
+        //reveal all remaining mines
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                Cell cell = state[x, y];
+
+                if (cell.type == Cell.Type.Mine)
+                {
+                    cell.flagged = true;
+                    state[x, y] = cell;
+                }
+
+            }
+        }
+
+    }
+
 
     private Cell GetCell(int x, int y)
     {
