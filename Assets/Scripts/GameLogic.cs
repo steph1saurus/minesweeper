@@ -152,6 +152,10 @@ public class GameLogic : MonoBehaviour
         {
             FlagMouseLocation();
         }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            RevealCell();
+        }
     }
 
     private void FlagMouseLocation()
@@ -175,6 +179,56 @@ public class GameLogic : MonoBehaviour
 
     }
 
+
+    private void RevealCell()
+    {
+        //convert screen position of the mouse to World position
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //convert mouse world position to cell
+        Vector3Int cellPosition = board.tilemap.WorldToCell(worldPosition);
+        //Get cell position
+        Cell cell = GetCell(cellPosition.x, cellPosition.y);
+
+        //if cell is flagged, it will also not be revealed
+        if (cell.type == Cell.Type.Invalid || cell.revealed || cell.flagged)
+        {
+            return;
+        }
+
+
+        if (cell.type == Cell.Type.Empty)
+        {
+            FloodEmpty(cell);
+        }
+
+
+        cell.revealed = true;
+        state[cellPosition.x, cellPosition.y] = cell;
+        board.Draw(state);
+    }
+
+    //use recursion to reveal all adjacent empty tiles if the tile selected is Empty
+    private void FloodEmpty(Cell cell)
+    {
+
+        //Exit recursion conditions
+        if (cell.revealed) return; //condition 1: if cell is already revealed, stop recursion
+        if (cell.type == Cell.Type.Mine || cell.type == Cell.Type.Invalid) return; //condition 2: if the cell (about to be revealed) is a mine or invalid, stop recursion
+
+        //if recursion conditions are not met
+        cell.revealed = true;
+        state[cell.position.x, cell.position.y] = cell;
+
+        //if the cell is empty, FloodEmpty() is called for next cell on X and Y axis in all directions
+        if (cell.type == Cell.Type.Empty)
+        {
+            FloodEmpty(GetCell(cell.position.x -1, cell.position.y)); //cell to left
+            FloodEmpty(GetCell(cell.position.x + 1, cell.position.y)); //cell to the right
+            FloodEmpty(GetCell(cell.position.x, cell.position.y - 1)); //cell above
+            FloodEmpty(GetCell(cell.position.x, cell.position.y + 1)); //cell below
+        }
+
+    }
 
     private Cell GetCell(int x, int y)
     {
