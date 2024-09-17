@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 603361743}
   - component: {fileID: 603361745}
   - component: {fileID: 603361744}
+  - component: {fileID: 603361746}
   m_Layer: 0
   m_Name: Tilemap
   m_TagString: Untagged
@@ -243,6 +244,31 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &603361746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603361742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7ef62b39ca5749218c2f509fa1eb828, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileUnknown: {fileID: 11400000, guid: c35c46b95386447e78d06dc082dd0ad8, type: 2}
+  tileEmpty: {fileID: 11400000, guid: 1ed842ea7322f4923a0c41ea56a27b04, type: 2}
+  tileMine: {fileID: 11400000, guid: a3ce88481e4ff424da5c5c435a62431c, type: 2}
+  tileExplode: {fileID: 11400000, guid: 6413320a98093467c95132da4c4865ff, type: 2}
+  tileFlag: {fileID: 11400000, guid: 0a48914c98508455bbb5eb435e543a6b, type: 2}
+  tileNum1: {fileID: 11400000, guid: c93fd5628b2194266af178612e199797, type: 2}
+  tileNum2: {fileID: 11400000, guid: 89270f45db5cf4db18b8807352411d4d, type: 2}
+  tileNum3: {fileID: 11400000, guid: cc3b18b157f6042f4bf25656adedd0ff, type: 2}
+  tileNum4: {fileID: 11400000, guid: c39d1117ed4d5438facd794050ecb8aa, type: 2}
+  tileNum5: {fileID: 11400000, guid: af49c408a4f444dc3ad117b485132192, type: 2}
+  tileNum6: {fileID: 11400000, guid: 32c20c7a8d09a4d9a9bf1169b27bcae8, type: 2}
+  tileNum7: {fileID: 11400000, guid: 319ee3fd4891045cc9165938492bf5d6, type: 2}
+  tileNum8: {fileID: 11400000, guid: 81dd08eb024e84d4a9e910dfa1508b1d, type: 2}
 --- !u!1 &1608051132
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,6 +371,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1952679713}
   - component: {fileID: 1952679712}
+  - component: {fileID: 1952679714}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -380,6 +407,18 @@ Transform:
   - {fileID: 603361743}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1952679714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1952679711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36013425341044021a27756645ecc0aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
