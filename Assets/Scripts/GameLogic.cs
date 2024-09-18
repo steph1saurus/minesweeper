@@ -15,6 +15,7 @@ public class GameLogic : MonoBehaviour
     private BoardScript board;
     private Cell[,] state;
     private bool gameOver;
+    private bool gameActive;
 
 
     private void OnValidate()
@@ -27,10 +28,10 @@ public class GameLogic : MonoBehaviour
         board = GetComponentInChildren<BoardScript>();
     }
 
-
     public void NewGame()
     {
         gameOver = false;
+        gameActive = true;
         //create 2D array of cells
         state = new Cell[width, height];
 
@@ -152,23 +153,25 @@ public class GameLogic : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.R))
+        if (gameActive == true)
         {
-            NewGame();
-        }
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                NewGame();
+            }
 
-        else if(!gameOver)
-        {
-            if (Input.GetMouseButtonDown(1))
+            else if (!gameOver)
             {
-                FlagMouseLocation();
-            }
-            else if (Input.GetMouseButtonDown(0))
-            {
-                RevealCell();
+                if (Input.GetMouseButtonDown(1))
+                {
+                    FlagMouseLocation();
+                }
+                else if (Input.GetMouseButtonDown(0))
+                {
+                    RevealCell();
+                }
             }
         }
-        
     }
 
     private void FlagMouseLocation()
