@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameLogic : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class GameLogic : MonoBehaviour
     public int width = 16;
     public int height = 16;
     public int mineCount = 32;
+    
 
     [Header("Private variables")]
     private BoardScript board;
@@ -25,14 +27,8 @@ public class GameLogic : MonoBehaviour
         board = GetComponentInChildren<BoardScript>();
     }
 
-    private void Start()
-    {
-        NewGame();
-        
 
-    }
-
-    private void NewGame()
+    public void NewGame()
     {
         gameOver = false;
         //create 2D array of cells
