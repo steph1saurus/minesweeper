@@ -9,13 +9,16 @@ public class GameLogic : MonoBehaviour
     public int width = 16;
     public int height = 16;
     public int mineCount = 32;
+    public GameObject pausePanel;
     
 
     [Header("Private variables")]
     private BoardScript board;
+    private TimerScript timerScript;
     private Cell[,] state;
     private bool gameOver;
     private bool gameActive;
+    public bool firstClick = false;//change
 
 
     private void OnValidate()
@@ -26,15 +29,18 @@ public class GameLogic : MonoBehaviour
     private void Awake()
     {
         board = GetComponentInChildren<BoardScript>();
+        timerScript = GetComponent<TimerScript>();
     }
 
     public void NewGame()
     {
         gameOver = false;
         gameActive = true;
+        firstClick = false;
         //create 2D array of cells
         state = new Cell[width, height];
 
+        timerScript.ResetTimer();
         GenerateCells();
         GenerateMines();
         GenerateNumbers();
@@ -42,6 +48,25 @@ public class GameLogic : MonoBehaviour
         Camera.main.transform.position = new Vector3(width / 2f, height / 2f, -10f);
         board.Draw(state);
 
+    }
+
+    public void PauseGame()
+    {
+        gameActive = false;
+        timerScript.StopTimer();
+        pausePanel.SetActive(true);
+
+    }
+
+    public void UnPauseGame()
+    {
+        timerScript.StartTimer();
+        gameActive = true;
+
+        if (pausePanel == true)
+        {
+            pausePanel.SetActive(false);
+        }
     }
 
     private void GenerateCells()
@@ -153,21 +178,36 @@ public class GameLogic : MonoBehaviour
 
     private void Update()
     {
+
+        if (!firstClick)
+        {
+            if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+            {
+                Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector3Int cellPosition = board.tilemap.WorldToCell(mouseWorldPos);
+
+                // Check if the mouse click is inside the bounds of the tilemap
+                if (board.tilemap.HasTile(cellPosition))
+                {
+                    gameActive = true; // Activate the game if clicked inside the tilemap
+                    timerScript.StartTimer();
+                }
+
+                // Mark that the first click has occurred
+                firstClick = true;
+            }
+        }
+
         if (gameActive == true)
         {
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                NewGame();
-            }
-
-            else if (!gameOver)
+            if (!gameOver)
             {
                 if (Input.GetMouseButtonDown(1))
                 {
                     FlagMouseLocation();
                 }
                 else if (Input.GetMouseButtonDown(0))
-                {
+                { 
                     RevealCell();
                 }
             }
@@ -251,6 +291,7 @@ public class GameLogic : MonoBehaviour
     //when mine is clicked
     private void Explode(Cell cell)
     {
+        timerScript.StopTimer();
         Debug.Log("Game over");
         gameOver = true;
 
@@ -291,6 +332,7 @@ public class GameLogic : MonoBehaviour
 
         Debug.Log("You won!");
         gameOver = true;
+        timerScript.StopTimer();
 
         //reveal all remaining mines
         for (int x = 0; x < width; x++)
